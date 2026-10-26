@@ -8,9 +8,8 @@ async function loadAvailability() {
   const timeout = setTimeout(() => controller.abort(), 3000);
 
   try {
-    const url = new URL(STATUS_ENDPOINT);
-    url.searchParams.set('t', Date.now().toString());
-    const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+    // Revalidate the stable URL so repeat visits can reuse an unchanged response.
+    const response = await fetch(STATUS_ENDPOINT, { cache: 'no-cache', signal: controller.signal });
     if (!response.ok) return;
 
     const payload = await response.json();
@@ -31,10 +30,19 @@ async function loadAvailability() {
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadAvailability, { once: true });
+// Let the hero image and other page resources finish before this optional request.
+function scheduleAvailability() {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(loadAvailability, { timeout: 1000 });
+  } else {
+    setTimeout(loadAvailability, 0);
+  }
+}
+
+if (document.readyState !== 'complete') {
+  window.addEventListener('load', scheduleAvailability, { once: true });
 } else {
-  loadAvailability();
+  scheduleAvailability();
 }
 
 document.querySelectorAll('[data-year]').forEach((element) => {
