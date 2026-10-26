@@ -2,6 +2,11 @@
   command = "npm run build"
   publish = "dist"
 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Language = "en-GB"
+
 # Vite fingerprints these files, so new releases receive new URLs.
 [[headers]]
   for = "/assets/*"
