@@ -403,8 +403,8 @@ h1 em {
 }
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 21px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
 }
 .service-card {
   border: 1px solid var(--line);
